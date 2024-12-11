@@ -1,0 +1,94 @@
+.App {
+  text-align: center;
+}
+
+.Navbar{
+  background-color: #D60265;
+  color: #f7f7f7 !important;
+}
+.form-button{
+  background-color: #D70F64 !important;
+  outline: none;
+  border: none !important;
+  color: #f7f7f7 !important;
+}
+.logout-button{
+  color: #D70F64 !important;
+  outline: none;
+  border: none !important;
+  background-color: #f7f7f7 !important;
+}
+.order-button{
+  color: #D70F64 !important;
+  width: 100%;
+  outline: none;
+  border: none !important;
+  background-color: #f7f7f7 !important;
+}
+.crud-button{  
+  background-color: #D70F64 !important;
+  outline: none;
+  border: none !important;
+  color: #f7f7f7 !important;
+  width: 125px;
+  margin-left: 5px;
+}
+.login-card{
+    box-shadow: 0 .1rem .5rem rgba(0,0,0,.15);
+    padding:30px;
+    width: 350px;
+}
+.register-card{
+  box-shadow: 0 .1rem .5rem rgba(0,0,0,.15);
+  padding:30px;
+  width: 100%;
+  max-width: 750px;
+}
+.menu-card{
+  box-shadow: 0 .1rem .5rem rgba(0,0,0,.15);
+  padding:30px;
+  width: 320px;
+}
+.bussiness-text{
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.homecontainer h4{
+  color: #000000;  
+}
+.accordion-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  color: #f7f7f7 !important;
+  text-align: left;
+  background-color: #FF2B84 !important;
+  border: 0;
+  border-radius: 0;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out,border-radius .15s ease;
+}
+.accordion-button:not(.collapsed) {
+  color: #f7f7f7 !important;
+  background-color: #D60265 !important;
+  box-shadow: inset 0 -1px 0 rgba(0,0,0,.125);
+}
+.accordion-button:not(.collapsed)::after {
+  background-image: none !important;
+  transform: rotate(-180deg);
+  color: white;
+}
+.card{
+  border: none !important;
+  
+}
+.cardBody{
+  background-color: #D60265;
+  color: #f7f7f7;
+  text-align: left;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
