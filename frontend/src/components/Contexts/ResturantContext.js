@@ -3,182 +3,99 @@ import axios from "../Api/Api";
 
 export const ResturantContext = createContext();
 
-export const ResturantProvider = (props) => {
+export const ResturantProvider = ({ children }) => {
+  const [currentRestaurant, setCurrentRestaurant] = useState(
+    window.localStorage.getItem("restaurantName") || null
+  );
   const [Resturants, setResturants] = useState([]);
   const [Orders, setOrders] = useState([]);
   const [Items, setItems] = useState([]);
+
+  const handleError = (error) => {
+    console.error("API Error:", error.response?.data || error.message);
+  };
+
   const fetchResturants = async () => {
-    axios
-      .get("/api/restaurant")
-      .then(function (response) {
-        const resturants = response.data.data;
-        setResturants(resturants);
-        console.log(resturants);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setResturants([]);
-      });
+    try {
+      const response = await axios.get("/api/restaurant");
+      setResturants(response.data.data);
+    } catch (error) {
+      handleError(error);
+      setResturants([]);
+    }
   };
-  const fetchOrders = () => {
-    axios
-      .get(
-        `api/orders/restaurant/${window.localStorage.getItem("restaurantName")}`
-      )
-      .then(function (response) {
-        setOrders(response.data.data);
-        console.log(Orders);
-      })
-      .catch((error) => {
-        console.log(error);
-        setOrders([]);
-      });
+
+  const fetchOrders = async () => {
+    try {
+      const response = await axios.get(`/api/orders/restaurant/${currentRestaurant}`);
+      setOrders(response.data.data);
+    } catch (error) {
+      handleError(error);
+      setOrders([]);
+    }
   };
+
   const fetchItems = async () => {
-    axios
-      .get(`/api/menu/items/${window.localStorage.getItem("restaurantName")}`)
-      .then(function (response) {
-        const items = response.data.data;
-        setItems(items);
-        console.log(items);
-      })
-      .catch(function (error) {
-        console.log(error);
-        setItems([]);
-      });
+    const restaurantName = window.localStorage.getItem("restaurantName");
+    
+    if (restaurantName) {
+      try {
+        const response = await axios.get(`/api/menu/items/${encodeURIComponent(restaurantName)}`);
+        const menuItems = response.data;
+        // 更新 Items 状态
+        setItems(menuItems);
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+      }
+    } else {
+      console.error("No restaurant selected.");
+    }
   };
 
-  const addCategory = async (categoryName) => {
-    axios
-      .post(
-        `/api/menu/category/${window.localStorage.getItem(
-          "restaurantName"
-        )}/${categoryName}`
-      )
-      .then(function (response) {
-        console.log(response);
+  const addItem = async (categoryName, itemName, itemDescription, itemPrice) => {
+    try {
+      const response = await axios.post("/api/menu/items", {
+        restaurantName: currentRestaurant,
+        categoryName,
+        itemName,
+        itemPrice,
+        itemDescription,
       });
-  };
-  const updateCategory = async (categoryName) => {
-    // axios
-    //   .put(`/api/menu/category/PizzaHut/${categoryName}`)
-    //   .then(function (response) {
-    //     console.log(response);
-    //     fetchItems();
-    //   });
-  };
-  const deleteCategory = async (categoryName) => {
-    axios
-      .delete(
-        `/api/menu/category/${window.localStorage.getItem(
-          "restaurantName"
-        )}/${categoryName}`
-      )
-      .then(function (response) {
-        console.log(response);
-        fetchItems();
-      });
-  };
-  const addItem = async (
-    categoryName,
-    itemName,
-    itemDescription,
-    itemPrice
-  ) => {
-    axios
-      .post("/api/menu/items", {
-        restaurantName: window.localStorage
-          .getItem("restaurantName")
-          .toString(),
-        categoryName: categoryName,
-        itemName: itemName,
-        itemPrice: itemPrice,
-        itemDescription: itemDescription,
-      })
-      .then(() => {
-        //Reason to use Fetch is to use we want to get updated values from all categories
-        fetchItems();
-      });
-  };
-  const updateItem = async (
-    id,
-    categoryName,
-    itemName,
-    itemDescription,
-    itemPrice
-  ) => {
-    axios
-      .put("/api/menu/items", {
-        _id: id,
-        restaurantName: window.localStorage
-          .getItem("restaurantName")
-          .toString(),
-        categoryName: categoryName,
-        itemName: itemName,
-        itemPrice: itemPrice,
-        itemDescription: itemDescription,
-      })
-      .then(() => {
-        //Reason to use Fetch is to use we want to get updated values from all categories
-        fetchItems();
-      });
-  };
-
-  const deleteItem = async (categoryName, itemName) => {
-    console.log(categoryName, itemName);
-    axios
-      .delete("/api/menu/items", {
-        data: {
-          restaurantName: window.localStorage
-            .getItem("restaurantName")
-            .toString(),
-          categoryName: categoryName,
-          itemName: itemName,
-        },
-      })
-      .then(() => {
-        //Reason to use Fetch is to use we want to get updated values from all categories
-        fetchItems();
-      });
-  };
-  const removeOrder = async (id) => {
-    axios
-      .delete("/api/orders/", {
-        data: {
-          _id: id,
-        },
-      })
-      .then(() => {
-        //Reason to use Fetch is to use we want to get updated values from all categories
-        fetchOrders();
-      });
+      setItems((prevItems) => [...prevItems, response.data.newItem]);
+    } catch (error) {
+      handleError(error);
+    }
   };
 
   useEffect(() => {
-    fetchOrders();
-    fetchResturants();
-    fetchItems();
-  }, []);
+    const initializeData = async () => {
+      try {
+        await Promise.all([fetchResturants(), fetchOrders(), fetchItems()]);
+      } catch (error) {
+        handleError(error);
+      }
+    };
+
+    initializeData();
+  }, [currentRestaurant]);
 
   return (
     <ResturantContext.Provider
       value={{
+        currentRestaurant,
+        setCurrentRestaurant,
         Resturants,
         setResturants,
         Items,
         setItems,
-        updateItem,
-        addCategory,
-        deleteCategory,
-        updateCategory,
-        addItem,
-        deleteItem,
-        fetchItems,
         Orders,
-        removeOrder,
+        fetchResturants,
+        fetchOrders,
+        fetchItems,
+        addItem,
       }}
     >
-      {props.children}
+      {children}
     </ResturantContext.Provider>
   );
 };

@@ -1,26 +1,21 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { ResturantContext } from "../Contexts/ResturantContext";
 import { UserContext } from "../Contexts/UserContext";
 import { useParams } from "react-router";
-import {
-  Container,
-  Row,
-  Col,
-  Card,
-  Button,
-  Toast,
-  ToastContainer,
-} from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Toast, ToastContainer } from "react-bootstrap";
 
 const RestaurantMenu = () => {
-  let { restaurantName } = useParams();
-  const { Items } = useContext(ResturantContext);
+  const { restaurantName } = useParams(); // 获取餐厅名称
+  const decodedRestaurantName = decodeURIComponent(restaurantName);
+  const { Items } = useContext(ResturantContext); // 从上下文中获取餐厅菜单项目
   const { addItem } = useContext(UserContext);
   const [ShowNotification, setShowNotification] = useState(false);
   const [ShowNotificationMsg, setShowNotificationMsg] = useState("");
   const [ShowNotificationVariant, setShowNotificationVariant] = useState("");
   const [addedItems, setAddedItems] = useState({});
+  const [restaurantMenu, setRestaurantMenu] = useState(null); // 用于存储当前餐厅的菜单
 
+  // 通知显示与隐藏
   const toggleNotification = (msg, variant) => {
     setShowNotification(true);
     setShowNotificationMsg(msg);
@@ -32,49 +27,57 @@ const RestaurantMenu = () => {
     }, 2000);
   };
 
+  // 确保数量更新的逻辑正常
   const updateQty = (mode, id) => {
+    let currentItemQTY = {};
     if (mode === "add") {
-      let currentItemQTY = {};
       if (!addedItems.hasOwnProperty(id)) {
         currentItemQTY[id] = 1;
-        setAddedItems({ ...addedItems, ...currentItemQTY });
       } else {
-        currentItemQTY[id] = addedItems[id] += 1;
-        setAddedItems({ ...addedItems, ...currentItemQTY });
+        currentItemQTY[id] = addedItems[id] + 1;
       }
     } else {
-      let currentItemQTY = {};
       if (addedItems.hasOwnProperty(id) && addedItems[id] > 0) {
-        currentItemQTY[id] = addedItems[id] -= 1;
-        setAddedItems({ ...addedItems, ...currentItemQTY });
+        currentItemQTY[id] = addedItems[id] - 1;
       }
     }
+    setAddedItems({ ...addedItems, ...currentItemQTY });
   };
-  const handleAddToCart = (
-    itemName,
-    itemPrice,
-    itemDescription,
-    itemCategory,
-    id
-  ) => {
+
+  // 处理添加菜品到购物车的逻辑
+  const handleAddToCart = (itemName, itemPrice, itemDescription, itemCategory, id) => {
     if (addedItems[id] > 0) {
       addItem({
-        itemName: itemName,
-        itemPrice: itemPrice,
-        itemDescription: itemDescription,
+        itemName,
+        itemPrice,
+        itemDescription,
         itemQuantity: addedItems[id],
-        itemCategory: itemCategory,
+        itemCategory,
         totalPrice: itemPrice * addedItems[id],
       });
       toggleNotification("Woohoo, Item has been added to cart!", "success");
     } else {
-      toggleNotification("Warning, Select atleast 1 item!", "danger");
+      toggleNotification("Warning, Select at least 1 item!", "danger");
     }
   };
+
+  // 在组件加载时，根据餐厅名称过滤出对应的菜单项
+  useEffect(() => {
+    // 根据餐厅名称加载菜单数据
+    fetchMenuItems(decodedRestaurantName);
+  }, [decodedRestaurantName]);
+
+  const fetchMenuItems = async (restaurantName) => {
+    const response = await fetch(`/api/menu/items/${encodeURIComponent(restaurantName)}`);
+    const data = await response.json();
+    setRestaurantMenu(data); // 更新菜单数据
+  };
+
   return (
     <Container className="mt-3">
       <h3>{restaurantName}</h3>
-      <p>You can order the following items availible in the menu</p>
+      <p>You can order the following items available in the menu</p>
+
       <ToastContainer position="top-end" style={{ marginTop: "70px" }}>
         <Toast
           show={ShowNotification}
@@ -83,101 +86,86 @@ const RestaurantMenu = () => {
           className="text-light"
         >
           <Toast.Header>
-            <strong className="me-auto">Notifcation</strong>
+            <strong className="me-auto">Notification</strong>
           </Toast.Header>
           <Toast.Body>{ShowNotificationMsg}</Toast.Body>
         </Toast>
       </ToastContainer>
-      {Items.map((item) => {
-        if (item.items.length > 0) {
-          return (
-            <Row key={item._id} style={{ textAlign: "left" }}>
-              <p
-                style={{
-                  fontSize: "20px",
-                  fontWeight: "bold",
-                }}
-                className="mt-2"
-              >
-                {item.categoryName}
-              </p>
-              {item.items.map((dish, i) => {
-                return (
-                  <Col md={3} className="mt-2" key={dish._id}>
-                    <Card style={{ width: "18rem" }}>
-                      <Card.Img
-                        variant="top"
-                        className="p-2"
-                        style={{ height: "200px", width: "250px" }}
-                        src="https://png.pngtree.com/png-vector/20191129/ourmid/pngtree-hand-drawn-fast-food-doodle-vector-set-of-fast-food-vector-png-image_2046737.jpg"
-                      />
-                      <Card.Body>
-                        <Card.Title>{dish.itemName}</Card.Title>
-                        <Card.Text>{dish.itemDescription}</Card.Text>
-                        <Card.Text>Rs {dish.itemPrice}</Card.Text>
-                        <div
-                          style={{
-                            width: "100%",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "space-evenly",
-                            marginTop: "10px",
-                            border: "3px solid #D70F64",
-                            padding: "5px",
-                          }}
-                          className="logout-button"
-                        >
-                          <Button
-                            className="logout-button"
-                            variant="primary"
-                            style={{ fontSize: "25px" }}
-                            onClick={() => updateQty("add", dish._id)}
-                          >
-                            +
-                          </Button>
 
-                          <div className="logout-button p-2">
-                            {addedItems.hasOwnProperty(dish._id)
-                              ? addedItems[dish._id]
-                              : 0}
-                          </div>
+      {/* 渲染菜单项 */}
+      <Row>
+        {/* 确保 `restaurantMenu` 是有效的再进行渲染 */}
+        {restaurantMenu && restaurantMenu.items && restaurantMenu.items.length === 0 ? (
+          <p>No items available in the menu.</p>
+        ) : (
+          restaurantMenu && restaurantMenu.items.map((dish) => (
+            <Col md={3} key={dish.item_id} className="mt-2">
+              <Card style={{ width: "18rem" }}>
+                <Card.Img
+                  variant="top"
+                  className="p-2"
+                  style={{ height: "200px", width: "250px" }}
+                  src={dish.ImageURL || "https://via.placeholder.com/150"}
+                />
+                <Card.Body>
+                  <Card.Title>{dish.item_name}</Card.Title>
+                  <Card.Text>{dish.description}</Card.Text>
+                  <Card.Text>Rs {dish.price}</Card.Text>
+                  <div
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-evenly",
+                      marginTop: "10px",
+                      border: "3px solid #D70F64",
+                      padding: "5px",
+                    }}
+                  >
+                    <Button
+                      className="logout-button"
+                      variant="primary"
+                      style={{ fontSize: "25px" }}
+                      onClick={() => updateQty("add", dish.item_id)}
+                    >
+                      +
+                    </Button>
 
-                          <Button
-                            className="logout-button"
-                            style={{ fontSize: "25px" }}
-                            variant="primary"
-                            onClick={() => updateQty("deduct", dish._id)}
-                          >
-                            -
-                          </Button>
-                        </div>
-                        <Button
-                          variant="primary"
-                          className="form-button"
-                          style={{ width: "100%" }}
-                          onClick={() =>
-                            handleAddToCart(
-                              dish.itemName,
-                              dish.itemPrice,
-                              dish.itemDescription,
-                              item.categoryName,
-                              dish._id
-                            )
-                          }
-                        >
-                          Add to cart
-                        </Button>
-                      </Card.Body>
-                    </Card>
-                  </Col>
-                );
-              })}
-            </Row>
-          );
-        } else {
-          return null;
-        }
-      })}
+                    <div className="logout-button p-2">
+                      {addedItems[dish.item_id] || 0}
+                    </div>
+
+                    <Button
+                      className="logout-button"
+                      style={{ fontSize: "25px" }}
+                      variant="primary"
+                      onClick={() => updateQty("deduct", dish.item_id)}
+                    >
+                      -
+                    </Button>
+                  </div>
+                  <Button
+                    variant="primary"
+                    className="form-button"
+                    style={{ width: "100%" }}
+                    onClick={() =>
+                      handleAddToCart(
+                        dish.item_name,
+                        dish.price,
+                        dish.description,
+                        restaurantMenu.categoryName,
+                        dish.item_id
+                      )
+                    }
+                  >
+                    Add to cart
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))
+        )}
+      </Row>
     </Container>
   );
 };

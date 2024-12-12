@@ -12,10 +12,9 @@ import ManageOrders from "./components/resturant/ManageOrders";
 import ManageMenu from "./components/resturant/ManageMenu";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./components/Auth/PrivateRoute";
 import { AuthContext } from "./components/Contexts/AuthContext";
-import { Navigate } from "react-router";
 import { useContext, useEffect } from "react";
 import ViewOrders from "./components/customer/ViewOrders";
 import PlaceOrder from "./components/customer/PlaceOrder";
@@ -33,14 +32,17 @@ function App() {
     ) {
       setCurrentUser(localStorage.getItem("currentUser"));
       setuserType(localStorage.getItem("userType"));
-      if (userType === "customer") {
-      } else if (userType === "restaurant") {
-        <Navigate to="/resturant/manage"></Navigate>;
-      } else if (userType === "customer") {
-        <Navigate to="/customer/manage"></Navigate>;
-      }
     }
-  }, [setCurrentUser, setuserType, currentUser, userType]);
+  }, [setCurrentUser, setuserType]);
+
+  // 重定向到用户的主页
+  useEffect(() => {
+    if (userType === "restaurant") {
+      window.location.href = "/resturant/manage";
+    } else if (userType === "customer") {
+      window.location.href = "/customer/manage";
+    }
+  }, [userType]);
 
   return (
     <Router>
@@ -48,26 +50,23 @@ function App() {
         <Navigation currentUser={currentUser} userType={userType}></Navigation>
         <Container className="d-flex justify-content-center align-items-center"></Container>
         <Routes>
-          <Route exact path="/" element={<Homepage></Homepage>}></Route>
+          <Route exact path="/" element={<Homepage />} />
           <Route path="/restaurants" element={<RestaurantList />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-         
           <Route
-            exact
             path="/resturant/signup"
-            element={<RestRegister> </RestRegister>}
-          ></Route>
+            element={<RestRegister />}
+          />
           <Route
-            exact
             path="/resturant/login"
-            element={<RestLogin> </RestLogin>}
-          ></Route>
+            element={<RestLogin />}
+          />
           <Route
             path="/resturant/manage"
             element={
               <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageHome></ManageHome>
+                <ManageHome />
               </PrivateRoute>
             }
           />
@@ -75,7 +74,7 @@ function App() {
             path="/resturant/manage/orders"
             element={
               <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageOrders></ManageOrders>
+                <ManageOrders />
               </PrivateRoute>
             }
           />
@@ -83,7 +82,7 @@ function App() {
             path="/resturant/manage/menu"
             element={
               <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageMenu></ManageMenu>
+                <ManageMenu />
               </PrivateRoute>
             }
           />
@@ -91,7 +90,7 @@ function App() {
             path="/customer/manage"
             element={
               <PrivateRoute redirect="/login" type="customer">
-                <CustomerHome></CustomerHome>
+                <CustomerHome />
               </PrivateRoute>
             }
           />
@@ -99,24 +98,19 @@ function App() {
             path="/customer/manage/order"
             element={
               <PrivateRoute redirect="/login" type="customer">
-                <PlaceOrder></PlaceOrder>
+                <PlaceOrder />
               </PrivateRoute>
             }
           />
           <Route
             path="/customer/manage/order/:restaurantName"
-            element={
-              <RestaurantMenu></RestaurantMenu>
-              //<PrivateRoute redirect="/login" type="customer">
-              //  <RestaurantMenu></RestaurantMenu>
-              //</PrivateRoute>
-            }
+            element={<RestaurantMenu />}
           />
           <Route
             path="/customer/manage/status"
             element={
               <PrivateRoute redirect="/login" type="customer">
-                <ViewOrders></ViewOrders>
+                <ViewOrders />
               </PrivateRoute>
             }
           />
@@ -124,7 +118,7 @@ function App() {
             path="/customer/manage/cart"
             element={
               <PrivateRoute redirect="/login" type="customer">
-                <ViewCart></ViewCart>
+                <ViewCart />
               </PrivateRoute>
             }
           />

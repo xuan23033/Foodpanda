@@ -61,6 +61,46 @@ app.post("/api/restaurants", (req, res) => {
   });
 });
 
+app.get("/api/menu/items/:restaurantName", (req, res) => {
+  const { restaurantName } = req.params;
+  const decodedRestaurantName = decodeURIComponent(restaurantName);
+  console.log("Decoded restaurantName:", decodedRestaurantName);
+
+  // 查詢餐廳ID
+  const queryRestaurant = "SELECT restaurant_id FROM restaurants WHERE name = ?";
+  db.query(queryRestaurant, [restaurantName], (err, results) => {
+    if (err) {
+      console.error("Database error (fetch restaurant):", err);
+      res.status(500).json({ error: "Failed to fetch restaurant data" });
+      return;
+    }
+
+    if (results.length > 0) {
+      const restaurantId = results[0].restaurant_id;
+
+      // 查詢該餐廳的菜單
+      const queryMenu = "SELECT * FROM menu_items WHERE restaurant_id = ?";
+      db.query(queryMenu, [restaurantId], (err, menuItems) => {
+        if (err) {
+          console.error("Database error (fetch menu):", err);
+          res.status(500).json({ error: "Failed to fetch menu items" });
+          return;
+        }
+
+        if (menuItems.length === 0) {
+          res.status(404).json({ error: "No menu items found for this restaurant" });
+        } else {
+          res.json({ items: menuItems });
+        }
+      });
+    } else {
+      res.status(404).json({ error: `Restaurant '${restaurantName}' not found` });
+    }
+  });
+});
+
+
+
 // 啟動服務器
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

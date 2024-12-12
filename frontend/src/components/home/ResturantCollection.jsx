@@ -45,18 +45,15 @@ const ResturantCollection = ({ showMenu }) => {
                 <Card.Body className="cardBody">
                   <Card.Title>
                     {Resturant.restaurantName}
-                    <br></br>
-                    <span style={{ fontSize: "15px" }}>
-                      {Resturant.cuisineType}
-                    </span>
+                    <br />
+                    <span style={{ fontSize: "15px" }}>{Resturant.cuisineType}</span>
                   </Card.Title>
                   {showMenu ? (
                     <>
-                      <hr></hr>
+                      <hr />
                       <Card.Text>
                         <p>{Resturant.operatingArea}</p>
-                        <strong>Rs. {Resturant.operatingFees}</strong> Delivery
-                        fee
+                        <strong>Rs. {Resturant.operatingFees}</strong> Delivery fee
                       </Card.Text>
                       <LinkContainer
                         to={Resturant.restaurantName}
@@ -66,7 +63,7 @@ const ResturantCollection = ({ showMenu }) => {
                             "restaurantName",
                             Resturant.restaurantName.toString()
                           );
-                          fetchItems();
+                          fetchItems(); // 这里可能需要优化：如果在菜单页面刷新时，数据能正常加载
                         }}
                       >
                         <Nav.Link>View Restaurant</Nav.Link>
@@ -78,6 +75,7 @@ const ResturantCollection = ({ showMenu }) => {
             </div>
           );
         })}
+
       </Carousel>
     </div>
   );
