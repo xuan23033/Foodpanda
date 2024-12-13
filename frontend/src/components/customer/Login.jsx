@@ -49,7 +49,7 @@ const Login = () => {
                   />
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="password">
-                  <Form.Label>還要密碼呦</Form.Label>
+                  <Form.Label>還要</Form.Label>
                   <Form.Control
                     type="password"
                     placeholder="密碼"
