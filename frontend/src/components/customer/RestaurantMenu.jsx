@@ -68,7 +68,7 @@ const RestaurantMenu = () => {
   }, [decodedRestaurantName]);
 
   const fetchMenuItems = async (restaurantName) => {
-    const response = await fetch(`/api/menu/items/${encodeURIComponent(restaurantName)}`);
+    const response = await fetch(`http://localhost:5000/api/menu/items/${encodeURIComponent(restaurantName)}`);
     const data = await response.json();
     setRestaurantMenu(data); // 更新菜单数据
   };
