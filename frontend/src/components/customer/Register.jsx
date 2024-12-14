@@ -38,23 +38,17 @@ const Register = () => {
   const handleRegistration = async (e) => {
     e.preventDefault();
     try {
-      const response = await registerUser(
-        username,
-        email,
-        password,
-        age,
-        gender,
-        address
-      );
+      const response = await registerUser(username, email, password, age, gender, address);
       if (response) {
         console.log(response);
         formRef.current.reset();
-        window.location.href = "/login";
+        window.location.href = "/login"; // 註冊後重定向到登入頁面
       }
     } catch (ex) {
       toggleNotification(ex.response.data.error);
     }
   };
+
   return (
     <Container className="d-flex flex-column justify-content-center align-items-center">
       <Row>
