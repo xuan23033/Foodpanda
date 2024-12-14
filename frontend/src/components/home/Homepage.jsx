@@ -9,21 +9,8 @@ const Homepage = () => {
   const [address, setAddress] = React.useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  const [isLogin, setIsLogin] = useState(true); // 默認顯示登入表單
   const [restaurants, setRestaurants] = useState([]);
 
-  const handleShowLogin = () => {
-    setIsLogin(true);  // 顯示登入表單
-    setShowModal(true);
-  };
-
-  const handleShowRegister = () => {
-    setIsLogin(false);  // 顯示註冊表單
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => setShowModal(false);
 
   useEffect(() => {
     if (
