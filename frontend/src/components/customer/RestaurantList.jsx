@@ -56,21 +56,35 @@ const RestaurantList = () => {
 
       {/* 篩選類型 */}
       <Form.Group className="mb-4">
-        <Form.Label>菜式</Form.Label>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", padding: "10px" }}>
-          {["甜點", "中式", "丼飯/蓋飯", "便當", "素食", "臺式", "咖哩", "咖啡", "壽司", "小吃", "義式", "拉麵", "日式"].map((type) => (
-            <Form.Check
-              key={type}
-              type="checkbox"
-              id={`filter-${type}`}
-              label={type}
-              checked={filterTypes.includes(type)}
-              onChange={() => handleFilterChange(type)}
-              style={{ display: "inline-block", marginRight: "10px" }}
-            />
-          ))}
-        </div>
-      </Form.Group>
+  <Form.Label style={{ fontSize: "1.2rem", fontWeight: "bold" }}>菜式</Form.Label>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(9, 1fr)", // 9等分，確保每個選項寬度相等
+      gap: "10px", // 控制格子間距
+      padding: "10px"
+    }}
+  >
+    {["小吃", "台式", "素食", "港式", "便利商店", "早餐", "咖啡", "義式", "日式"].map((type) => (
+      <Form.Check
+        key={type}
+        type="checkbox"
+        id={`filter-${type}`}
+        label={<span style={{ fontSize: "1rem" }}>{type}</span>}
+        checked={filterTypes.includes(type)}
+        onChange={() => handleFilterChange(type)}
+        style={{
+          margin: "0",               // 移除外邊距
+          display: "flex",           // 使用 Flex 排版
+          alignItems: "center"       // 垂直置中對齊
+        }}
+      />
+    ))}
+  </div>
+</Form.Group>
+
+
+
 
       {/* 餐廳列表 */}
       {filteredRestaurants.length === 0 ? (
