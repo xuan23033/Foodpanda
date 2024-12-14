@@ -1,15 +1,10 @@
 import "./App.css";
 import Homepage from "./components/home/Homepage";
 import RestaurantList from "./components/customer/RestaurantList";
-import Login from "./components/customer/Login";
 import Register from "./components/customer/Register";
+import Login from "./components/customer/Login";
 import Navigation from "./components/navigation/Navigation";
-import RestRegister from "./components/resturant/RestRegister";
-import RestLogin from "./components/resturant/RestLogin";
-import ManageHome from "./components/resturant/ManageHome";
 import CustomerHome from "./components/customer/CustomerHome";
-import ManageOrders from "./components/resturant/ManageOrders";
-import ManageMenu from "./components/resturant/ManageMenu";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
@@ -37,9 +32,7 @@ function App() {
 
   // 重定向到用户的主页
   useEffect(() => {
-    if (userType === "restaurant") {
-      window.location.href = "/resturant/manage";
-    } else if (userType === "customer") {
+    if (userType === "customer") {
       window.location.href = "/customer/manage";
     }
   }, [userType]);
@@ -52,40 +45,11 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Homepage />} />
           <Route path="/restaurants" element={<RestaurantList />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/resturant/signup"
-            element={<RestRegister />}
-          />
-          <Route
-            path="/resturant/login"
-            element={<RestLogin />}
-          />
-          <Route
-            path="/resturant/manage"
-            element={
-              <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageHome />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/resturant/manage/orders"
-            element={
-              <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageOrders />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/resturant/manage/menu"
-            element={
-              <PrivateRoute redirect="/resturant/login" type="restaurant">
-                <ManageMenu />
-              </PrivateRoute>
-            }
-          />
+
+          {/* 註冊和登入頁面 */}
+          <Route path="/customer/signup" element={<Register />} />
+          <Route path="/customer/login" element={<Login />} />
+  
           <Route
             path="/customer/manage"
             element={
