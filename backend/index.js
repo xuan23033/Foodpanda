@@ -15,6 +15,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // 中間件
 app.use(cors());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // 建立數據庫連接池
 const db = mysql.createPool({
@@ -43,12 +44,13 @@ app.get("/", (req, res) => {
 
 // 註冊 API
 app.post("/api/auth/register", async (req, res) => {
+
   const { email, name, password } = req.body;
 
   if (!email) return res.status(400).json({ error: "請提供 Email" });
 
   // 檢查 Email 是否存在
-  const queryCheck = "SELECT * FROM users WHERE email = ?";
+  const queryCheck = "SELECT * FROM user WHERE Email = ?";
   db.query(queryCheck, [email], async (err, results) => {
     if (err) {
       console.error("資料庫錯誤:", err);
@@ -63,7 +65,7 @@ app.post("/api/auth/register", async (req, res) => {
     if (name && password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       const queryInsert =
-        "INSERT INTO users (name, email, password, account_status) VALUES (?, ?, ?, ?)";
+        "INSERT INTO user (user_id, name, Email, phone, address, password, account_status) VALUES (?, ?, ?, ?, ?, ?, ?)";
       db.query(
         queryInsert,
         [name, email, hashedPassword, "active"],
@@ -89,7 +91,7 @@ app.post("/api/auth/login", (req, res) => {
     return res.status(400).json({ error: "請提供 Email 和密碼" });
   }
 
-  const query = "SELECT * FROM users WHERE email = ?";
+  const query = "SELECT * FROM user WHERE Email = ?";
   db.query(query, [email], async (err, results) => {
     if (err) {
       console.error("資料庫錯誤:", err);
