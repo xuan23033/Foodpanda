@@ -6,12 +6,16 @@ const RegisterModal = ({ show, handleClose, handleSwitchToLogin }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false); // 新增狀態：是否正在提交
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // 禁用按鈕
+    setError(""); // 清除上一次的錯誤訊息
     console.log("開始提交表單...");
+
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+      const response = await fetch(`http://localhost:5000/users/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, name, password }),
@@ -22,13 +26,19 @@ const RegisterModal = ({ show, handleClose, handleSwitchToLogin }) => {
 
       if (response.ok) {
         alert("註冊成功！");
+        setEmail(""); // 清空表單
+        setName("");
+        setPassword("");
         handleClose();
       } else {
         setError(data.error || "註冊失敗，請檢查資料");
       }
     } catch (err) {
       setError("伺服器連接失敗，請稍後再試");
+    } finally {
+      setIsSubmitting(false); // 恢復按鈕可用
     }
+
   };
 
   return (
@@ -68,8 +78,8 @@ const RegisterModal = ({ show, handleClose, handleSwitchToLogin }) => {
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
-            完成註冊
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "註冊中..." : "完成註冊"}
           </Button>
         </Form>
         <div className="mt-3 text-center">
