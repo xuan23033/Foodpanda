@@ -1,10 +1,21 @@
 import React, { useContext } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { UserContext } from "../Contexts/UserContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 const ViewCart = () => {
-  const { placeOrder } = useContext(UserContext);
-  const Items = JSON.parse(window.localStorage.getItem("Items"));
+  const { setCartItems } = useContext(UserContext); // 使用 Context 設定購物車內容
+  const navigate = useNavigate(); // 導航功能
+  const Items = JSON.parse(window.localStorage.getItem("Items")); // 從 localStorage 獲取購物車內容
+
+  const handlePlaceOrder = () => {
+    if (Items && Items.length > 0) {
+      setCartItems(Items); // 將購物車內容保存到 Context
+      navigate("/customer/vieworders"); // 跳轉到 ViewOrders 頁面
+    } else {
+      alert("Your cart is empty.");
+    }
+  };
 
   return (
     <Container className="mt-5">
@@ -24,28 +35,26 @@ const ViewCart = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {Items.map((Item, i) => {
-                    return (
-                      <tr key={i}>
-                        <td>{Item.itemName}</td>
-                        <td>{Item.itemQuantity}</td>
-                        <td>Rs. {Item.itemPrice}</td>
-                        <td>Rs. {Item.totalPrice}</td>
-                      </tr>
-                    );
-                  })}
+                  {Items.map((Item, i) => (
+                    <tr key={i}>
+                      <td>{Item.itemName}</td>
+                      <td>{Item.itemQuantity}</td>
+                      <td>Rs. {Item.itemPrice}</td>
+                      <td>Rs. {Item.totalPrice}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </Table>
-              <Link to="/customer/manage/status" className="btn btn-success">
+              <Button onClick={handlePlaceOrder} className="btn btn-success">
                 Confirm and Place Order
-              </Link>
+              </Button>
             </>
           ) : (
             <img
               src="https://www.no-fea.com/front/images/empty-cart.png"
               alt="empty-cart"
               width={"300px"}
-            ></img>
+            />
           )}
         </Col>
       </Row>

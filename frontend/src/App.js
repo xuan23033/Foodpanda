@@ -68,7 +68,7 @@ function App() {
             element={<RestaurantMenu />}
           />
           <Route
-            path="/customer/manage/status"  /* 結帳 */
+            path="/customer/vieworders"  /* 結帳 */
             element={<ViewOrders />}
           />
           <Route
