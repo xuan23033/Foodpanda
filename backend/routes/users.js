@@ -46,7 +46,7 @@ router.post("/register", async (req, res) => {
 });
 
 // 登入 POST
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
