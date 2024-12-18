@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App";
 import "bootstrap/dist/css/bootstrap.min.css";
 import reportWebVitals from "./reportWebVitals";
-import { AuthProvider } from "./components/Contexts/AuthContext";
+import AuthProvider from "./components/Contexts/AuthContext";
 import { ResturantProvider } from "./components/Contexts/ResturantContext";
 import { UserProvider } from "./components/Contexts/UserContext";
 
