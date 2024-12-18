@@ -1,36 +1,34 @@
 import "./App.css";
-import Homepage from "./components/home/Homepage";
-import RestaurantList from "./components/customer/RestaurantList";
-import Register from "./components/customer/Register";
-import Login from "./components/customer/Login";
-import Navigation from "./components/navigation/Navigation";
-import CustomerHome from "./components/customer/CustomerHome";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import PrivateRoute from "./components/Auth/PrivateRoute";
-import { AuthContext } from "./components/Contexts/AuthContext";
 import { useContext, useEffect } from "react";
+
+import Homepage from "./components/home/Homepage";
+import RestaurantList from "./components/customer/RestaurantList";
+import Navigation from "./components/navigation/Navigation";
+import CustomerHome from "./components/customer/CustomerHome";
 import ViewOrders from "./components/customer/ViewOrders";
 import PlaceOrder from "./components/customer/PlaceOrder";
 import RestaurantMenu from "./components/customer/RestaurantMenu";
 import ViewCart from "./components/customer/ViewCart";
+import PrivateRoute from "./components/Auth/PrivateRoute";
+import { AuthContext } from "./components/Contexts/AuthContext";
 
 function App() {
-  const { currentUser, userType, setCurrentUser, setuserType } =
-    useContext(AuthContext);
+  const { currentUser, userType, setCurrentUser, setuserType } = useContext(AuthContext);
 
+  // 恢復用戶登入狀態
   useEffect(() => {
-    if (
-      localStorage.getItem("currentUser") &&
-      localStorage.getItem("userType")
-    ) {
-      setCurrentUser(localStorage.getItem("currentUser"));
-      setuserType(localStorage.getItem("userType"));
+    const savedUser = localStorage.getItem("currentUser");
+    const savedUserType = localStorage.getItem("userType");
+    if (savedUser && savedUserType) {
+      setCurrentUser(savedUser);
+      setuserType(savedUserType);
     }
   }, [setCurrentUser, setuserType]);
 
-  // 重定向到用户的主页
+  // 根據用戶類型進行重定向
   useEffect(() => {
     if (userType === "customer") {
       window.location.href = "/customer/manage";
@@ -40,16 +38,19 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Navigation currentUser={currentUser} userType={userType}></Navigation>
+        {/* 導航欄 */}
+        <Navigation currentUser={currentUser} userType={userType} />
+
+        {/* 主頁內容 */}
         <Container className="d-flex justify-content-center align-items-center"></Container>
+
+        {/* 路由配置 */}
         <Routes>
-          <Route exact path="/" element={<Homepage />} />
+          {/* 公開頁面 */}
+          <Route path="/" element={<Homepage />} />
           <Route path="/restaurants" element={<RestaurantList />} />
 
-          {/* 註冊和登入頁面 */}
-          <Route path="/customer/signup" element={<Register />} />
-          <Route path="/customer/login" element={<Login />} />
-  
+          {/* 客戶專屬頁面 */}
           <Route
             path="/customer/manage"
             element={
@@ -59,33 +60,24 @@ function App() {
             }
           />
           <Route
-            path="/customer/manage/order"
-            element={
-              <PrivateRoute redirect="/login" type="customer">
-                <PlaceOrder />
-              </PrivateRoute>
-            }
+            path="/customer/manage/order"  /* 外送員 */
+            element={<PlaceOrder />}
           />
           <Route
             path="/customer/manage/order/:restaurantName"
             element={<RestaurantMenu />}
           />
           <Route
-            path="/customer/manage/status"
-            element={
-              <PrivateRoute redirect="/login" type="customer">
-                <ViewOrders />
-              </PrivateRoute>
-            }
+            path="/customer/manage/status"  /* 結帳 */
+            element={<ViewOrders />}
           />
           <Route
             path="/customer/manage/cart"
-            element={
-              <PrivateRoute redirect="/login" type="customer">
-                <ViewCart />
-              </PrivateRoute>
-            }
+            element={<ViewCart />}
           />
+
+          {/* 未知路由處理 */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </Router>

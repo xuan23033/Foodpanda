@@ -2,25 +2,31 @@ import React, { useState, useContext } from "react";
 import { Nav, Navbar, Container, Button } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import { AuthContext } from "../Contexts/AuthContext";
-import AuthModal from "../customer/AuthModal";
-import { useNavigate } from "react-router-dom";
+import LoginModal from "../customer/LoginModal";
+import RegisterModal from "../customer/RegisterModal";
 import "../../App.css";
 
 const Navigation = ({ currentUser, userType }) => {
   const { logout } = useContext(AuthContext);
-  const navigate = useNavigate(); // 使用 useNavigate 來跳轉頁面
+  
+  // 控制 Modal 顯示的狀態
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
 
-  //控制 Modal 顯示的狀態
-  const [showModal, setShowModal] = useState(false);
-  const [isLogin, setIsLogin] = useState(true); //默認顯示登入表單
+  const handleShowLoginModal = () => setShowLoginModal(true);
+  const handleCloseLoginModal = () => setShowLoginModal(false);
 
-  const handleShowModal = () => setShowModal(true);
-  const handleCloseModal = () => setShowModal(false);
+  const handleShowRegisterModal = () => setShowRegisterModal(true);
+  const handleCloseRegisterModal = () => setShowRegisterModal(false);
 
-  const toggleAuthMode = () => setIsLogin(!isLogin); // 切換登入和註冊表單
+  const handleSwitchToRegister = () => {
+    setShowLoginModal(false);
+    setShowRegisterModal(true);
+  };
 
-  const goToCart = () => {
-    navigate("/customer/manage/cart");
+  const handleSwitchToLogin = () => {
+    setShowRegisterModal(false);
+    setShowLoginModal(true);
   };
 
   const renderLinks = (currentUser, userType, logout) => {
@@ -53,9 +59,9 @@ const Navigation = ({ currentUser, userType }) => {
           <LinkContainer to="/customer/manage/status" className="Navlink">
             <Nav.Link>View Orders</Nav.Link>
           </LinkContainer>
-          <Button onClick={goToCart} className="form-button">
-            Go to Cart
-          </Button>
+          <LinkContainer to="/customer/manage/cart" className="Navlink">
+            <Nav.Link>Cart</Nav.Link>
+          </LinkContainer>
           <Button onClick={logout} className="logout-button">
             Logout
           </Button>
@@ -67,9 +73,16 @@ const Navigation = ({ currentUser, userType }) => {
           <LinkContainer to="/" className="Navlink">
             <Nav.Link>Home</Nav.Link>
           </LinkContainer>
-          <Button onClick={handleShowModal} className="form-button">
-            Login / Sign Up
+          <Button onClick={handleShowLoginModal} className="form-button">
+            登入 
           </Button>
+          <Button onClick={handleShowRegisterModal} className="form-button">
+            註冊
+          </Button>
+
+          {/* 顯示登入和註冊模態框 */}
+          <LoginModal show={showLoginModal} handleClose={handleCloseLoginModal} handleSwitchToRegister={handleSwitchToRegister} />
+          <RegisterModal show={showRegisterModal} handleClose={handleCloseRegisterModal} handleSwitchToLogin={handleSwitchToLogin} />
         </>
       );
     }
@@ -91,13 +104,6 @@ const Navigation = ({ currentUser, userType }) => {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      
-      <AuthModal 
-        show={showModal} 
-        handleClose={handleCloseModal} 
-        isLogin={isLogin} 
-        toggleAuthMode={toggleAuthMode} 
-      />
     </>
   );
 };

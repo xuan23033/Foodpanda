@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { UserContext } from "../Contexts/UserContext";
+import { Link } from "react-router-dom";
 const ViewCart = () => {
   const { placeOrder } = useContext(UserContext);
   const Items = JSON.parse(window.localStorage.getItem("Items"));
@@ -35,9 +36,9 @@ const ViewCart = () => {
                   })}
                 </tbody>
               </Table>
-              <Button className="form-button" onClick={placeOrder}>
+              <Link to="/customer/manage/status" className="btn btn-success">
                 Confirm and Place Order
-              </Button>
+              </Link>
             </>
           ) : (
             <img

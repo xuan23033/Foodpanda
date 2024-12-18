@@ -3,6 +3,7 @@ import { ResturantContext } from "../Contexts/ResturantContext";
 import { UserContext } from "../Contexts/UserContext";
 import { useParams } from "react-router";
 import { Container, Row, Col, Card, Button, Toast, ToastContainer } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const RestaurantMenu = () => {
   const { restaurantName } = useParams(); // 获取餐厅名称
@@ -77,6 +78,13 @@ const RestaurantMenu = () => {
     <Container className="mt-3">
       <h3>{restaurantName}</h3>
       <p>You can order the following items available in the menu</p>
+      <div>
+        <h2>餐廳菜單</h2>
+        {/* 其他內容 */}
+        <Link to="/customer/manage/cart" className="btn btn-success">
+          前往購物車
+        </Link>
+      </div>
 
       <ToastContainer position="top-end" style={{ marginTop: "70px" }}>
         <Toast
