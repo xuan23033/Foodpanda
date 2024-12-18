@@ -3,13 +3,20 @@ const express = require("express");
 const mysql = require("mysql2");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const users = require("./routes/users");
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+require("dotenv").config();
+
+
 // 中間件
-app.use(cors());
+
+app.use(cors({ origin: "http://localhost:3000" }));
 app.use(bodyParser.json());
+app.use(express.json());
+app.use("/users", users);
 
 // 建立數據庫連接池
 const db = mysql.createPool({
@@ -35,6 +42,8 @@ db.getConnection((err, connection) => {
 app.get("/", (req, res) => {
   res.send("Food Delivery Backend is running!");
 });
+
+
 
 // 獲取所有餐廳
 app.get("/api/restaurants", (req, res) => {

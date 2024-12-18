@@ -1,31 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Form } from "react-bootstrap";
 import ResturantCollection from "./ResturantCollection";
-import AuthModal from "../customer/AuthModal";
 import FAQ from "./FAQ";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom"; 
 import { Link } from "react-router-dom";
 
 const Homepage = () => {
   const [address, setAddress] = React.useState("");
   const [currentLocation, setCurrentLocation] = useState(null);
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
   const [restaurants, setRestaurants] = useState([]);
 
-  const handleShowLogin = () => {
-    setIsLogin(true);
-    setShowModal(true);
-  };
 
-  const handleShowRegister = () => {
-    setIsLogin(false);
-    setShowModal(true);
-  };
-
-  const handleCloseModal = () => setShowModal(false);
-  
   useEffect(() => {
     if (
       localStorage.getItem("currentUser") &&
@@ -38,14 +24,6 @@ const Homepage = () => {
       }
     }
   }, []);
-
-  //const handleSearch = () => {
-  //  if (address.trim() === "") {
-  //    alert("請輸入地址！");
-  //    return;
-  //  }
-  //  navigate(`/restaurants?address=${encodeURIComponent(address)}`);
-  //};
 
   // 獲取當前定位的處理函數
   const handleLocateMe = () => {
@@ -79,36 +57,19 @@ const Homepage = () => {
 
   return (
     <>
+      <div className="homepage">
+        <h1>歡迎來到 Food Delivery 平台</h1>
+        <Button
+          variant="primary"
+          className="me-3"
+          onClick={() => navigate("/restaurants")}
+        >
+          瀏覽餐廳
+        </Button>
+        
+      </div>
 
-    <div className="homepage">
-      <h1>歡迎來到 Food Delivery 平台</h1>
-      <Button
-        variant="primary"
-        className="me-3"
-        onClick={() => navigate("/restaurants")}
-      >
-        瀏覽餐廳
-      </Button>
-      <Button
-        variant="secondary"
-        className="me-3"
-        onClick={() => navigate("/login")}
-      >
-        登入
-      </Button>
-      <Button
-        variant="success"
-        onClick={() => navigate("/register")}
-      >
-        註冊
-      </Button>
-    </div>
     
-      <AuthModal
-        show={showModal}
-        handleClose={handleCloseModal}
-        isLogin={isLogin}
-      />
 
       <div
         className="position-relative"
@@ -117,16 +78,16 @@ const Homepage = () => {
           backgroundColor: "#f8f9fa", 
         }}
       >
-      <img
-        className="d-block float-end"
-        src="https://images.deliveryhero.io/image/foodpanda/homepage/refresh-hero-home-tw.png?width=528"
-        alt="First slide"
-        style={{
+        <img
+          className="d-block float-end"
+          src="https://images.deliveryhero.io/image/foodpanda/homepage/refresh-hero-home-tw.png?width=528"
+          alt="First slide"
+          style={{
             transform: "translateY(0%)",
             maxHeight: "100%",
             maxWidth: "50%",
-        }}
-      />
+          }}
+        />
       </div>
 
       <Container className="my-4">
@@ -163,13 +124,13 @@ const Homepage = () => {
                 我們有在這邊提供送餐服務!!!
               </h4>
               <Row xs={1} md={12} className="g-4 m-3">
-                <ResturantCollection></ResturantCollection>
+                <ResturantCollection />
               </Row>
             </div>
           </Col>
           <Col md={12} className="AccordationCollection">
             <h4 className="mb-3">常見問題</h4>
-            <FAQ></FAQ>
+            <FAQ />
           </Col>
         </Row>
       </Container>
