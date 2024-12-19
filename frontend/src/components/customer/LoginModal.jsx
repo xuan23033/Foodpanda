@@ -1,22 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../Contexts/AuthContext";
 
-const LoginModal = ({ show, handleClose, handleSwitchToRegister, redirectTo }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
+const LoginModal = ({ show, handleClose, handleSwitchToRegister }) => {
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-  const location = useLocation();  // 獲取當前路由的資訊
 
+  const [email, setEmail] = useState(""); // 管理 email 狀態
+  const [password, setPassword] = useState(""); // 管理 password 狀態
+  const [error, setError] = useState(""); // 錯誤訊息
+  const [isSubmitting, setIsSubmitting] = useState(false); // 控制是否正在提交
+
+  // 處理登入邏輯
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setError("");
-    console.log("開始提交表單...");
-    
+    setIsSubmitting(true); // 設置為正在提交
 
     try {
       const response = await fetch(`http://localhost:5000/users/login`, {
@@ -25,24 +24,24 @@ const LoginModal = ({ show, handleClose, handleSwitchToRegister, redirectTo }) =
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("伺服器回應：", response);
       const data = await response.json();
 
       if (response.ok) {
         // 成功登入
         alert("登入成功！");
-        localStorage.setItem("token", data.token);  // 儲存 token
-        localStorage.setItem("userType", data.userType);  // 儲存 userType
-        handleClose();  // 關閉登入 Modal
-        // 執行任何額外的行為，例如刷新頁面或導航到用戶專屬頁面
-        window.location.reload();  // 可選：重新載入頁面來更新 UI
+        localStorage.setItem("token", data.token); // 將 token 儲存到 localStorage
+        localStorage.setItem("userType", data.userType); // 儲存用戶類型
+        login(data.token, data.userType); // 更新 AuthContext
+        handleClose(); // 關閉登入 Modal
+        navigate("/customer/manage"); // 導航到客戶管理頁面
+        /*window.location.reload();*/ // 可選：重新載入頁面來更新 UI
       } else {
         setError(data.error || "登入失敗，請檢查帳號和密碼");
       }
     } catch (err) {
       setError("伺服器連接失敗，請稍後再試");
     } finally {
-      setIsSubmitting(false);  // 恢復按鈕可用
+      setIsSubmitting(false); // 恢復按鈕可用
     }
   };
 
@@ -73,10 +72,10 @@ const LoginModal = ({ show, handleClose, handleSwitchToRegister, redirectTo }) =
               required
             />
           </Form.Group>
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" disabled={isSubmitting}>
             {isSubmitting ? "登入中..." : "登入"}
           </Button>
-          {error && <p>{error}</p>}
+          {error && <p className="text-danger mt-3">{error}</p>}
         </Form>
         <div className="mt-3 text-center">
           <Button variant="link" onClick={handleSwitchToRegister}>

@@ -7,10 +7,7 @@ const OrderHistory = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("token");
-        const response = await fetch("http://localhost:5000/api/orders", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await fetch("http://localhost:5000/api/orders/1"); // 固定 user_id 為 1
         const data = await response.json();
         setOrders(data);
       } catch (error) {
@@ -34,15 +31,17 @@ const OrderHistory = () => {
               <th>餐廳名稱</th>
               <th>總金額</th>
               <th>訂單日期</th>
+              <th>餐點內容</th>
             </tr>
           </thead>
           <tbody>
             {orders.map((order) => (
-              <tr key={order.orderId}>
-                <td>{order.orderId}</td>
-                <td>{order.restaurantName}</td>
-                <td>Rs. {order.totalAmount}</td>
-                <td>{new Date(order.date).toLocaleString()}</td>
+              <tr key={order.order_id}>
+                <td>{order.order_id}</td>
+                <td>{order.restaurant_name}</td>
+                <td>Rs. {order.total_price}</td>
+                <td>{new Date(order.order_date).toLocaleString()}</td>
+                <td>{order.items}</td>
               </tr>
             ))}
           </tbody>

@@ -71,7 +71,7 @@ export const UserProvider = (props) => {
   }, []);
 
   return (
-    <UserContext.Provider value={{ Items, Orders, addItem, placeOrder, getOrders, cartItems, setCartItems }}>
+    <UserContext.Provider value={{ Items, Orders, addItem,placeOrder, getOrders, cartItems, setCartItems }}>
       {props.children}
     </UserContext.Provider>
   );
