@@ -71,7 +71,7 @@ const Navigation = ({ currentUser, userType }) => {
       return (
         <>
           <LinkContainer to="/" className="Navlink">
-            <Nav.Link>Home</Nav.Link>
+            <Nav.Link>首頁</Nav.Link>
           </LinkContainer>
           <Button onClick={handleShowLoginModal} className="form-button">
             登入 

@@ -65,7 +65,7 @@ const RestaurantList = () => {
       padding: "10px"
     }}
   >
-    {["小吃", "台式", "素食", "港式", "便利商店", "早餐", "咖啡", "義式", "日式"].map((type) => (
+    {["小吃", "台式", "港式", "便利商店", "早餐", "咖啡", "義式", "日式"].map((type) => (
       <Form.Check
         key={type}
         type="checkbox"

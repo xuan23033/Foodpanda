@@ -13,7 +13,11 @@ import PlaceOrder from "./components/customer/PlaceOrder";
 import RestaurantMenu from "./components/customer/RestaurantMenu";
 import ViewCart from "./components/customer/ViewCart";
 import PrivateRoute from "./components/Auth/PrivateRoute";
-import { AuthContext } from "./components/Contexts/AuthContext";
+import { AuthContext, AuthProvider } from "./components/Contexts/AuthContext";
+import Dashboard from "./components/customer/Dashboard";
+import OrderHistory from "./components/customer/OrderHistory";
+import Profile from "./components/customer/Profile";
+
 
 function App() {
   const { currentUser, userType, setCurrentUser, setuserType } = useContext(AuthContext);
@@ -54,10 +58,18 @@ function App() {
           <Route
             path="/customer/manage"
             element={
-              <PrivateRoute redirect="/login" type="customer">
-                <CustomerHome />
-              </PrivateRoute>
+              /*<PrivateRoute redirect="/login" type="customer">*/
+                <Dashboard />
+              /*</PrivateRoute>*/
             }
+          />
+          <Route
+            path="/orders"  
+            element={<OrderHistory />}
+          />
+          <Route
+            path="/profile"  
+            element={<Profile />}
           />
           <Route
             path="/customer/manage/order"  /* 外送員 */
@@ -68,7 +80,7 @@ function App() {
             element={<RestaurantMenu />}
           />
           <Route
-            path="/customer/manage/status"  /* 結帳 */
+            path="/customer/vieworders"  /* 結帳 */
             element={<ViewOrders />}
           />
           <Route
